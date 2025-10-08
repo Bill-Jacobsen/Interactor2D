@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
-public class Interactor2D : MonoBehaviour
+public class Interactor2D : MonoBehaviour, IInteractor
 {
     [Header("Interact Input")]
     [Tooltip("Assign a Button-type InputAction (e.g., Player/Interact).")]
@@ -13,7 +13,8 @@ public class Interactor2D : MonoBehaviour
     
     // Interactable we're currently overlapping (null if none).
     private Interactable2D _currentInteractable;
-
+    public Transform Transform => transform;
+    
     private void Awake()
     {
         // Ensure the player's collider is not a trigger so we receive trigger callbacks.
@@ -45,7 +46,7 @@ public class Interactor2D : MonoBehaviour
         {
             if (_currentInteractable != null)
             {
-                _currentInteractable.Interact();
+                // Interact goes here
             }
             else
             {

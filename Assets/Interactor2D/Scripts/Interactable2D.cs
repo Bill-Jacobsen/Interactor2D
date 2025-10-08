@@ -2,7 +2,7 @@ using UnityEngine;
 
 [AddComponentMenu( "Interaction/Interactable 2D" )]
 [DisallowMultipleComponent]
-public class Interactable2D : MonoBehaviour
+public class Interactable2D : MonoBehaviour, IInteractable
 {
     private enum GizmoMode { 
         Off, 
@@ -30,10 +30,9 @@ public class Interactable2D : MonoBehaviour
         }
     }
     
-    // Temporary debug for testing. Replace it with real behavior later.
-    public void Interact()
+    public bool Interact(IInteractor interactor)
     {
-        Debug.Log($"[Interactor2D] Interacted with: {name}");
+        return true;
     }
     
     // Get collider and set it to trigger.
