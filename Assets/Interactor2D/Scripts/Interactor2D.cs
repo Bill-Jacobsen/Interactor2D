@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,12 +8,15 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Collider2D))]
 public class Interactor2D : MonoBehaviour, IInteractor
 {
+    public event Action<IInteractor, IInteractable> Interacted;
+    
     [Header("Interact Input")]
     [Tooltip("Assign a Button-type InputAction (e.g., Player/Interact).")]
     [SerializeField] private InputActionReference interactAction;
     
     // Interactable we're currently overlapping (null if none).
-    private Interactable2D _currentInteractable;
+    private IInteractable _currentInteractable;
+    public IInteractable CurrentInteractable => _currentInteractable;
     public Transform Transform => transform;
     
     private void Awake()
@@ -23,48 +27,49 @@ public class Interactor2D : MonoBehaviour, IInteractor
         {
             col.isTrigger = false;
         }
+        
     }
     
     // Enable the assigned action when active.
     private void OnEnable()
     {
-        if (interactAction?.action != null)
-        {
-            interactAction.action.Enable();
-        }
-        else
+        var action = interactAction?.action;
+        if (action == null)
         {
             Debug.LogWarning("[Interactor2D] No interact action assigned.", this);
+            return;
         }
-    }
-    
-    private void Update()
-    {
-        if (interactAction?.action == null) return;  // No action assigned.
-        
-        if (interactAction.action.WasPressedThisFrame())
-        {
-            if (_currentInteractable != null)
-            {
-                // Interact goes here
-            }
-            else
-            {
-                Debug.Log("[Interactor2D] Interact pressed, but no interactable found.");
-            }
-        }
+
+        action.Enable();
+        action.performed += OnInteractPerformed;
 
     }
     
     // Disable the action and clear _currentInteractable when inactive.
     private void OnDisable()
     {
-        if (interactAction?.action != null)
+        var action = interactAction?.action;
+        if (action != null)
         {
-            interactAction.action.Disable();
+            action.performed -= OnInteractPerformed;
+            action.Disable();
         }
-
         _currentInteractable = null;
+
+    }
+    
+    private void OnInteractPerformed(InputAction.CallbackContext ctx)
+    {
+        if (_currentInteractable == null)
+        {
+            Debug.Log("[Interactor2D] Interact performed, but no interactable found.");
+            return;
+        }
+        
+        // Do the thing
+        _currentInteractable.Interact(this);
+        
+        Interacted?.Invoke(this, _currentInteractable);
     }
     
     // Called when the component is first added, or you click reset in the inspector.
@@ -84,23 +89,16 @@ public class Interactor2D : MonoBehaviour, IInteractor
     // Cache the interactable if we overlap it.
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.TryGetComponent<Interactable2D>(out Interactable2D interactable))
-        {
-            _currentInteractable = interactable;
-        }
-
+        var i = other.GetComponentInParent<IInteractable>();
+        if (i != null) _currentInteractable = i;
     }
     
     // Clear it when we leave that same interactable.
     private void OnTriggerExit2D(Collider2D other)
     {
-        // If we don't currently have a target, nothing to clear.
         if (_currentInteractable == null) return;
-        // Did the thing we exited even have an Interactable2D on it?
-        if (!other.TryGetComponent<Interactable2D>(out var interactable)) return;
-        // Is the thing we exited the same as the thing we had cached?
-        if (interactable != _currentInteractable) return;
-        
+        var i = other.GetComponentInParent<IInteractable>();
+        if (i != _currentInteractable) return;
         _currentInteractable = null;
     }
 }

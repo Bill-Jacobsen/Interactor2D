@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 [AddComponentMenu( "Interaction/Interactable 2D" )]
 [DisallowMultipleComponent]
@@ -9,6 +10,16 @@ public class Interactable2D : MonoBehaviour, IInteractable
         SelectedOnly, 
         Always
     }
+
+    [Header("Actions (executed in order)")] [SerializeField]
+    private InteractionAction[] actions;
+    
+    [Header("Action Target (optional)")]
+    [Tooltip("If set, the action will be executed on this GameObject instead of this Interactable.")]
+    [SerializeField] private GameObject actionTargetOverride;
+    
+    [Header("On Interact")] [Tooltip("Invoked when this object is interacted with.")] [SerializeField]
+    private UnityEvent onInteract = new ();
     
     [Header("Gizmos")]
     [Tooltip("Off = no gizmo, SelectedOnly = show when selected, Always = always show in Scene View.")]
@@ -29,10 +40,19 @@ public class Interactable2D : MonoBehaviour, IInteractable
             col.isTrigger = true;
         }
     }
-    
-    public bool Interact(IInteractor interactor)
+
+    public void Interact(IInteractor interactor)
     {
-        return true;
+        var target = actionTargetOverride != null ? actionTargetOverride : gameObject;
+        if (actions != null)
+        {
+            foreach (var a in actions)
+            {
+                a?.Execute(interactor, target);
+            }
+        }
+        onInteract?.Invoke();
+        Debug.Log($"[Interactor2D] Interacting with {name}", this);
     }
     
     // Get collider and set it to trigger.

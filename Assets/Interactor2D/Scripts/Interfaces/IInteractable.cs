@@ -2,5 +2,5 @@
 
 public interface IInteractable
 {
-    bool Interact(IInteractor interactor);
+    void Interact(IInteractor interactor);
 }
