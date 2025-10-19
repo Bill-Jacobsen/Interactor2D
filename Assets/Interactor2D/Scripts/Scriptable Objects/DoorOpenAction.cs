@@ -5,6 +5,14 @@ public class DoorOpenAction : InteractionAction
 {
     public override void Execute(IInteractor interactor, GameObject target)
     {
-        target.GetComponent<IDoor>().Open();
+        var door = target.GetComponent<IDoor>();
+        if (!door.IsOpen)
+        {
+            door.Open();
+        }
+        else
+        {
+            door.Close();
+        }
     }
 }

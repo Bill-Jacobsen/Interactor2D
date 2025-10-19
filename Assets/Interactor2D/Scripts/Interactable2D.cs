@@ -12,7 +12,7 @@ public class Interactable2D : MonoBehaviour, IInteractable
     }
 
     [Header("Actions (executed in order)")] [SerializeField]
-    private InteractionAction[] actions;
+    private InteractionAction action;
     
     [Header("Action Target (optional)")]
     [Tooltip("If set, the action will be executed on this GameObject instead of this Interactable.")]
@@ -44,12 +44,9 @@ public class Interactable2D : MonoBehaviour, IInteractable
     public void Interact(IInteractor interactor)
     {
         var target = actionTargetOverride != null ? actionTargetOverride : gameObject;
-        if (actions != null)
+        if (action != null)
         {
-            foreach (var a in actions)
-            {
-                a?.Execute(interactor, target);
-            }
+            action?.Execute(interactor, target);
         }
         onInteract?.Invoke();
         Debug.Log($"[Interactor2D] Interacting with {name}", this);
