@@ -1005,6 +1005,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 844be002d23060b408e72cf9874e238d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable2D
+  triggerMode: 0
   action: {fileID: 11400000, guid: 9c8675241b422894daba8c96bbf5dfcd, type: 2}
   actionTargetOverride: {fileID: 811166145}
   onInteract:
@@ -1161,6 +1162,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 844be002d23060b408e72cf9874e238d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable2D
+  triggerMode: 0
   action: {fileID: 11400000, guid: 9c8675241b422894daba8c96bbf5dfcd, type: 2}
   actionTargetOverride: {fileID: 1205112273}
   onInteract:
@@ -1317,6 +1319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 844be002d23060b408e72cf9874e238d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable2D
+  triggerMode: 0
   action: {fileID: 11400000, guid: 9c8675241b422894daba8c96bbf5dfcd, type: 2}
   actionTargetOverride: {fileID: 1114873529}
   onInteract:

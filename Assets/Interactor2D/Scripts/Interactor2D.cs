@@ -65,11 +65,17 @@ public class Interactor2D : MonoBehaviour, IInteractor
             Debug.Log("[Interactor2D] Interact performed, but no interactable found.");
             return;
         }
-        
+
+        if (_currentInteractable.Mode != TriggerMode.Input)
+        {
+            return;
+        }
+
+        var target = _currentInteractable;
         // Do the thing
-        _currentInteractable.Interact(this);
+        target.Interact(this);
         
-        Interacted?.Invoke(this, _currentInteractable);
+        Interacted?.Invoke(this, target);
     }
     
     // Called when the component is first added, or you click reset in the inspector.
@@ -90,15 +96,42 @@ public class Interactor2D : MonoBehaviour, IInteractor
     private void OnTriggerEnter2D(Collider2D other)
     {
         var i = other.GetComponentInParent<IInteractable>();
-        if (i != null) _currentInteractable = i;
+        if (i == null) return;
+        
+        _currentInteractable = i;
+        
+        if (i.Mode != TriggerMode.Input)
+        {
+            var target = i;
+            target.Interact(this);
+            Interacted?.Invoke(this, target);
+        }
+
+        if (i.Mode == TriggerMode.Pickup)
+        {
+            _currentInteractable = null;
+        }
     }
     
     // Clear it when we leave that same interactable.
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (_currentInteractable == null) return;
         var i = other.GetComponentInParent<IInteractable>();
-        if (i != _currentInteractable) return;
+        if (_currentInteractable == null || i == null) return;
+
+        if (!ReferenceEquals(i, _currentInteractable))
+        {
+            _currentInteractable = null;
+            return;
+        }
+        
+        if (i.Mode == TriggerMode.PressurePlate)
+        {
+            var target = i;
+            target.Interact(this);
+            Interacted?.Invoke(this, target);
+        }
+        
         _currentInteractable = null;
     }
 }

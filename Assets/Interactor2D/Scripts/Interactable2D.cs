@@ -11,6 +11,14 @@ public class Interactable2D : MonoBehaviour, IInteractable
         Always
     }
 
+    
+    [Header("Trigger Mode")]
+    [Tooltip("How this interactable activates:\n" +
+             "Input - press the assigned button.\n" +
+             "Pickup - auto when the Interactor enters (coins, ignores input).\n" +
+             "PressurePlate - auto on enter AND on exit (step-on/step-off).")]
+    [SerializeField] private TriggerMode triggerMode = TriggerMode.Input;
+    
     [Header("Actions (executed in order)")] [SerializeField]
     private InteractionAction action;
     
@@ -25,6 +33,7 @@ public class Interactable2D : MonoBehaviour, IInteractable
     [Tooltip("Off = no gizmo, SelectedOnly = show when selected, Always = always show in Scene View.")]
     [SerializeField] private GizmoMode gizmoMode = GizmoMode.SelectedOnly;
     
+    public TriggerMode Mode => triggerMode;
     private void Awake()
     {
         var col = GetComponent<Collider2D>();
